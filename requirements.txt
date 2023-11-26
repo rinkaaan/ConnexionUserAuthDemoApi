@@ -1,0 +1,5 @@
+connexion[flask,swagger-ui,uvicorn]
+psycopg[binary]
+SQLAlchemy
+python-jose[cryptography]
+requests-oauthlib

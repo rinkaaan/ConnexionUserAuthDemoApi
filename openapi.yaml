@@ -1,0 +1,119 @@
+openapi: 3.0.0
+servers:
+  - url: http://localhost:8080
+    description: User API
+info:
+  title: User
+  version: '0.1'
+paths:
+  '/auth/verify':
+    post:
+      description: Verify auth code and return JWT token
+      tags: [ Auth ]
+      x-openapi-router-controller: api.auth
+      operationId: verify
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Returns JWT token
+          content:
+            'text/plain':
+              schema:
+                type: string
+        '401':
+          description: Invalid auth code
+  '/user':
+    get:
+      tags: [ User ]
+      x-openapi-router-controller: api.user
+      operationId: get
+      security:
+        - jwt: [ 'secret' ]
+      responses:
+        '200':
+          description: Return api
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User does not exist
+#    patch:
+#      tags: [ User ]
+#      x-openapi-router-controller: api
+#      operationId: user.patch
+#      parameters:
+#        - $ref: '#/components/parameters/user_id'
+#      responses:
+#        '200':
+#          description: User updated
+#      requestBody:
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/UserProps'
+#    delete:
+#      tags: [ User ]
+#      x-openapi-router-controller: api
+#      operationId: user.delete
+#      parameters:
+#        - $ref: '#/components/parameters/user_id'
+#      responses:
+#        '204':
+#          description: User was deleted
+#        '404':
+#          description: User does not exist
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      x-bearerInfoFunc: api.auth.decode_token
+  parameters:
+    user_id:
+      name: user_id
+      description: User's Unique identifier
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    User:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/UserReadonlyProps'
+    UserReadonlyProps:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        email:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        picture:
+          type: string
+          readOnly: true
+        given_name:
+          type: string
+          readOnly: true
+        family_name:
+          type: string
+          readOnly: true
+        locale:
+          type: string
+          readOnly: true
