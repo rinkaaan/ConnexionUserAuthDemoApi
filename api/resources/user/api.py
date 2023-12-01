@@ -1,5 +1,5 @@
-from app import session
-from models.index import User
+from api.app import session
+from api.resources.user.model import User
 
 
 def get(user, token_info):

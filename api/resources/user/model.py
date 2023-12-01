@@ -1,18 +1,12 @@
+import datetime
 import os
 import uuid
-import datetime
 
 from jose import jwt
-from sqlalchemy import Column, DateTime, UUID, ColumnElement, Text
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, UUID, ColumnElement, DateTime, Text
 
-Base = declarative_base()
-
-
-class BaseExtended:
-    def dump(self):
-        columns = [c.name for c in self.__table__.columns]
-        return {k: v for k, v in vars(self).items() if k in columns}
+from api.init_models import Base
+from nguylinc_python_utils.sqlalchemy import BaseExtended
 
 
 class User(Base, BaseExtended):
@@ -30,7 +24,7 @@ class User(Base, BaseExtended):
     google_fields = ["email", "name", "picture", "given_name", "family_name", "locale"]
 
     def generate_token(self):
-        timestamp = datetime.now(datetime.UTC).timestamp()
+        timestamp = datetime.datetime.now(datetime.timezone.utc).timestamp()
         payload = {
             "iss": "com.nguylinc",
             "iat": int(timestamp),

@@ -8,9 +8,9 @@ info:
 paths:
   '/auth/verify':
     post:
-      description: Verify auth code and return JWT token
       tags: [ Auth ]
-      x-openapi-router-controller: api.auth
+      description: Verify auth code and return JWT token
+      x-openapi-router-controller: resources.auth.api
       operationId: verify
       requestBody:
         content:
@@ -26,10 +26,10 @@ paths:
                 type: string
         '401':
           description: Invalid auth code
-  '/user':
+  /user:
     get:
       tags: [ User ]
-      x-openapi-router-controller: api.user
+      x-openapi-router-controller: resources.user.api
       operationId: get
       security:
         - jwt: [ 'secret' ]
@@ -42,47 +42,13 @@ paths:
                 $ref: '#/components/schemas/User'
         '404':
           description: User does not exist
-#    patch:
-#      tags: [ User ]
-#      x-openapi-router-controller: api
-#      operationId: user.patch
-#      parameters:
-#        - $ref: '#/components/parameters/user_id'
-#      responses:
-#        '200':
-#          description: User updated
-#      requestBody:
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/UserProps'
-#    delete:
-#      tags: [ User ]
-#      x-openapi-router-controller: api
-#      operationId: user.delete
-#      parameters:
-#        - $ref: '#/components/parameters/user_id'
-#      responses:
-#        '204':
-#          description: User was deleted
-#        '404':
-#          description: User does not exist
 components:
   securitySchemes:
     jwt:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      x-bearerInfoFunc: api.auth.decode_token
-  parameters:
-    user_id:
-      name: user_id
-      description: User's Unique identifier
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
+      x-bearerInfoFunc: resources.auth.utils.decode_token
   schemas:
     User:
       type: object

@@ -3,24 +3,17 @@ from datetime import datetime
 
 from connexion.exceptions import Unauthorized
 from jose import jwt
-from requests_oauthlib import OAuth2Session
 
-from app import session
-from models.index import User
-from models.utils import deserialize_body
-
-scope = [
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile",
-    "openid",
-]
-google = OAuth2Session(os.getenv("CLIENT_ID"), scope=scope, redirect_uri=os.getenv("REDIRECT_URI"))
+from api.app import session
+from api.resources.auth.utils import oauth
+from api.resources.user.model import User
+from nguylinc_python_utils.sqlalchemy import deserialize_body
 
 
 def verify(body):
     body = body.decode('utf-8')
     try:
-        id_token = google.fetch_token(os.getenv("TOKEN_URL"), client_secret=os.getenv("CLIENT_SECRET"), code=body)['id_token']
+        id_token = oauth.fetch_token(os.getenv("GOOGLE_OAUTH_TOKEN_URL"), client_secret=os.getenv("GOOGLE_OAUTH_CLIENT_SECRET"), code=body)['id_token']
         id_token = jwt.decode(id_token, key=None, options={
             "verify_signature": False,
             "verify_aud": False,
@@ -43,10 +36,3 @@ def verify(body):
     token = user.generate_token()
 
     return token
-
-
-def decode_token(token):
-    try:
-        return jwt.decode(token, os.getenv("JWT_SECRET"))
-    except Exception:
-        raise Unauthorized
